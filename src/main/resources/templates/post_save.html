@@ -23,10 +23,11 @@
             </div>
         </form>
         <a href="/" role="button">취소</a>
-        <button type="button" id="btn-save">등록</button>
+        <button type="submit" id="btn-save">등록</button>
     </div>
 </div>
-<script src="/js/app/index.js"></script>
+<th:block layout:fragment="script"></th:block>
+<script th:src="@{/js/app/index.js}"></script>
 
 </body>
 </html>

@@ -16,13 +16,15 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td>{{id}}</td>
-        <td><a href="/posts/update/{{id}}">{{title}}</a></td> // ①
-        <td>{{author}}</td>
-        <td>{{modifiedDate}}</td>
+    <tr th:each="post : ${posts}">
+        <td th:text="${post.id}"></td>
+        <td th:text="${post.title}"><a href="/posts/update/${post.id}"></a></td>
+        <td th:text="${post.author}"></td>
+        <td th:text="${post.modifiedDate}"></td>
     </tr>
     </tbody>
 </table>
+<th:block layout:fragment="script"></th:block>
+<script th:src="@{/js/app/index.js}"></script>
 </body>
 </html>

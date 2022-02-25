@@ -1,6 +1,5 @@
 package seoul.bulletin.controller;
 
-import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -15,13 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import seoul.bulletin.domain.Posts;
 import seoul.bulletin.domain.PostsRepository;
-import seoul.bulletin.web.PostsSaveRequestDto;
-import seoul.bulletin.web.PostsUpdateRequestDto;
+import seoul.bulletin.dto.PostsSaveRequestDto;
+import seoul.bulletin.dto.PostsUpdateRequestDto;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

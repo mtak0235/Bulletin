@@ -1,4 +1,4 @@
-package seoul.bulletin.web;
+package seoul.bulletin.dto;
 
 import lombok.Getter;
 import seoul.bulletin.domain.Posts;

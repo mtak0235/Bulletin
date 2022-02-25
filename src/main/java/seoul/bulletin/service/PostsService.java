@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seoul.bulletin.domain.Posts;
 import seoul.bulletin.domain.PostsRepository;
-import seoul.bulletin.web.PostsListResponseDto;
-import seoul.bulletin.web.PostsResponseDto;
-import seoul.bulletin.web.PostsSaveRequestDto;
-import seoul.bulletin.web.PostsUpdateRequestDto;
+import seoul.bulletin.dto.PostsListResponseDto;
+import seoul.bulletin.dto.PostsResponseDto;
+import seoul.bulletin.dto.PostsSaveRequestDto;
+import seoul.bulletin.dto.PostsUpdateRequestDto;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -21,6 +21,14 @@ public class PostsService {
     @Transactional
     public Long save(PostsSaveRequestDto requestDto) {
         return postsRepository.save(requestDto.toEntiy()).getId();
+    }
+
+    @Transactional
+    public boolean delete (Long id) {
+        Posts posts = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
+        postsRepository.delete(posts);
+        return !postsRepository.findById(id).isPresent();
     }
 
     @Transactional
@@ -41,13 +49,6 @@ public class PostsService {
         return postsRepository.findAllDesc().stream()
                 .map(PostsListResponseDto::new)
                 .collect(Collectors.toList());
-
     }
 
-    @Transactional
-    public void delete (Long id) {
-        Posts posts = postsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
-        postsRepository.delete(posts);
-    }
 }
