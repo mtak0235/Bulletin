@@ -3,9 +3,11 @@ package seoul.bulletin.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import seoul.bulletin.domain.Posts;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class PostsSaveRequestDto {
     private String title;

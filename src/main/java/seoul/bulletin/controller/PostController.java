@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import seoul.bulletin.service.PostsService;
 import seoul.bulletin.dto.PostsResponseDto;
 import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
+import seoul.bulletin.service.PostsService;
 
 @RequiredArgsConstructor
 @Controller
@@ -22,36 +22,45 @@ public class PostController {
     }
 
     @GetMapping("/posts/save")
-    public String savePage(Model model) {
+    public String postForm(Model model) {
+        model.addAttribute("postsSaveRequestDto", new PostsSaveRequestDto());
         return "post_save";
     }
 
     @PostMapping("/posts")
-    public Long save(@RequestBody PostsSaveRequestDto requestDto) {
-        return postsService.save(requestDto);
-    }
-
-    @PutMapping("/posts/{id}")
-    public Long update(@PathVariable Long id, @RequestBody PostsUpdateRequestDto requestDto) {
-        return postsService.update(id, requestDto);
+    public String postSubmit(@ModelAttribute("postsSaveRequestDto") PostsSaveRequestDto postsSaveRequestDto) {
+        postsService.save(postsSaveRequestDto);
+        return "redirect:/";
     }
 
     @GetMapping("/posts/{id}")
-    public PostsResponseDto findById(@PathVariable Long id, Model model) {
-        return postsService.findById(id);
+    public String resultForm(@PathVariable Long id, Model model) {
+        model.addAttribute("post", postsService.findById(id));
+        return "post_result";
     }
 
     @GetMapping("/posts/update/{id}")
     public String postsUpdate(@PathVariable Long id, Model model) {
         PostsResponseDto dto = postsService.findById(id);
-        model.addAttribute("post", dto);
+        PostsUpdateRequestDto postsUpdateRequestDto = new PostsUpdateRequestDto();
+        postsUpdateRequestDto.setId(dto.getId());
+        postsUpdateRequestDto.setContent(dto.getContent());
+        postsUpdateRequestDto.setTitle(dto.getTitle());
+        model.addAttribute("form", postsUpdateRequestDto);
+        model.addAttribute("prev", dto);
         return "post_update";
     }
 
+    @PostMapping("/posts/update/{id}")
+    public String update(@PathVariable Long id, @ModelAttribute("form") PostsUpdateRequestDto requestDto) {
+        postsService.update(id, requestDto);
+        return "redirect:/";
+    }
+
     @DeleteMapping("/posts/{id}")
-    public Long delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id) {
         if (postsService.delete(id) == false)
             return null;
-        return id;
+        return "redirect:/";
     }
 }

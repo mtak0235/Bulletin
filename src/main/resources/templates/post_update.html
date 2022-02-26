@@ -6,31 +6,26 @@
 </head>
 <body>
 <h1>게시글 수정</h1>
-<div>
-    <div>
-        <form>
-            <div>
-                <label for="id">글 번호</label>
-                <input type="text" id="id" value="${post.id}" readonly>
-            </div>
-            <div>
-                <label for="title">제목</label>
-                <input type="text" id="title" value="post.title">
-            </div>
-            <div>
-                <label for="author"> 작성자 </label>
-                <input type="text" id="author" value="post.author" readonly>
-            </div>
-            <div>
-                <label for="content"> 내용 </label>
-                <textarea id="content" value="post.content"></textarea>
-            </div>
-        </form>
-        <a href="/" role="button" >취소</a>
-        <button type="button" id="btn-update">수정 완료</button>
-        <button type="button" id="btn-delete">삭제</button>
+
+<form th:action="@{/posts/update/{identity} (identity=${prev.id})}"  th:object="${form}" method="post">
+    <div class="mb-3">
+        <label for="title" class="form-label">제목</label>
+        <input type="text" th:field="*{title}" class="form-control" id="title" th:placeholder="${prev.title}">
     </div>
-</div>
+    <div class="mb-3">
+        <label for="content" class="form-label">내용</label>
+        <input type="text" th:field="*{content}" class="form-control" id="content" th:placeholder="${prev.content}">
+    </div>
+    <div class="mb-3">
+        <label for="author" class="form-label">작성자</label>
+        <textarea type="text" class="form-control" id="author" th:placeholder="${prev.author}" readonly></textarea>
+    </div>
+    <div class="col-12">
+        <a href="/" role="button" class="btn btn-secondary">수정 취소</a>
+        <button type="submit"  class="btn btn-primary">수정 완료</button>
+    </div>
+</form>
+
 <script th:src="@{/js/app/index.js}"></script>
 <th:block layout:fragment="script"></th:block>
 </body>
