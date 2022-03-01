@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seoul.bulletin.domain.Posts;
 import seoul.bulletin.domain.PostsRepository;
+import seoul.bulletin.domain.StorageRepository;
 import seoul.bulletin.dto.PostsListResponseDto;
 import seoul.bulletin.dto.PostsResponseDto;
 import seoul.bulletin.dto.PostsSaveRequestDto;
@@ -16,11 +17,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class PostsService {
+
+    private final StorageRepository storageRepository;
     private final PostsRepository postsRepository;
 
     @Transactional
     public Long save(PostsSaveRequestDto requestDto) {
-        return postsRepository.save(requestDto.toEntiy()).getId();
+        return storageRepository.save(requestDto.toEntiy());
     }
 
     @Transactional
@@ -40,8 +43,8 @@ public class PostsService {
 
     @Transactional
     public PostsResponseDto findById(Long id) {
-        Posts entity = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
-        return new PostsResponseDto(entity);
+        Posts post = storageRepository.findById(id);
+        return new PostsResponseDto(post);
     }
 
     @Transactional

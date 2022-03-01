@@ -37,8 +37,7 @@ public class PostsRepositoryTest {
         String title = "이것은 제목";
         String content = "이것은 내용";
         String author = "이것은 글쓴이";
-        Posts tmp;
-        tmp = postsRepository.save(Posts.builder()
+        Posts tmp = postsRepository.save(Posts.builder()
                 .title(title)
                 .content(content)
                 .author(author)
@@ -80,8 +79,8 @@ public class PostsRepositoryTest {
         String expectedTitle = "바뀐 제목";
         String expectedContent = "바뀐 내용";
         savedPosts.update(expectedTitle, expectedContent);
-        assertThat(changedPost.get().getTitle()).isEqualTo(expectedTitle);
-        assertThat(changedPost.get().getContent()).isEqualTo(expectedContent);
+        assertThat(savedPosts.getTitle()).isEqualTo(expectedTitle);
+        assertThat(savedPosts.getContent()).isEqualTo(expectedContent);
     }
 
     @Test
