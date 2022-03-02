@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -15,7 +16,7 @@ public class StorageRepository {
     @Transactional
     public Long save(Object target) {
         try {
-            fileRepository.openFile("test.txt", "index.txt");
+            fileRepository.openFileWriter("test.txt", "index.txt");
             Posts savedPost = postsRepository.save((Posts) target);
             String strJson = getStringFromPost(savedPost);
             fileRepository.save(strJson, savedPost.getId());
@@ -37,22 +38,21 @@ public class StorageRepository {
     }
 
     @Transactional
-    public Posts findById(Long id) {
-        return postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
+    public Optional<Posts> findById(Long id) {
+        return postsRepository.findById(id);
     }
 
     @Transactional
     public boolean delete(Long id) {
         try {
-            fileRepository.openFile("test.txt", "index.txt");
+            fileRepository.openFileWriter("test.txt", "index.txt");
             Posts posts = postsRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
             File indexFile = new File("index.txt");
             if (indexFile.isFile()) {
-                FileReader fileReader = new FileReader("index.txt");
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                fileRepository.openFileReader("test.txt", "index.txt");
                 String readline = null;
-                while ((readline = bufferedReader.readLine()) != null) {
+                while ((readline = fileRepository.getIndexFileBufferedReader().readLine()) != null) {
                     if (readline.equals(id)) {
                         postsRepository.delete(posts);
                         fileRepository.delete(id);

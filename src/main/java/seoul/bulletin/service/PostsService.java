@@ -12,6 +12,7 @@ import seoul.bulletin.dto.PostsUpdateRequestDto;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,10 +29,11 @@ public class PostsService {
 
     @Transactional
     public boolean delete (Long id) {
-        Posts posts = postsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
-        postsRepository.delete(posts);
-        return !postsRepository.findById(id).isPresent();
+//        Posts posts = postsRepository.findById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
+//        postsRepository.delete(posts);
+        storageRepository.delete(id);
+        return !storageRepository.findById(id).isPresent();
     }
 
     @Transactional
@@ -43,8 +45,8 @@ public class PostsService {
 
     @Transactional
     public PostsResponseDto findById(Long id) {
-        Posts post = storageRepository.findById(id);
-        return new PostsResponseDto(post);
+        Optional<Posts> post = storageRepository.findById(id);
+        return new PostsResponseDto(post.get());
     }
 
     @Transactional
