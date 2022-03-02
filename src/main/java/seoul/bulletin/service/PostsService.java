@@ -28,19 +28,14 @@ public class PostsService {
     }
 
     @Transactional
-    public boolean delete (Long id) {
-//        Posts posts = postsRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
-//        postsRepository.delete(posts);
+    public boolean delete(Long id) {
         storageRepository.delete(id);
         return !storageRepository.findById(id).isPresent();
     }
 
     @Transactional
     public Long update(Long id, PostsUpdateRequestDto requestDto) {
-        Posts posts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
-        posts.update(requestDto.getTitle(), requestDto.getContent());
-        return id;
+        return storageRepository.update(id, requestDto);
     }
 
     @Transactional
@@ -51,9 +46,6 @@ public class PostsService {
 
     @Transactional
     public List<PostsListResponseDto> findAllDesc() {
-        return postsRepository.findAllDesc().stream()
-                .map(PostsListResponseDto::new)
-                .collect(Collectors.toList());
+        return storageRepository.getPostsListResponseDtos();
     }
-
 }

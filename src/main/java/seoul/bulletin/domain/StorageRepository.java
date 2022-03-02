@@ -3,9 +3,13 @@ package seoul.bulletin.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import seoul.bulletin.dto.PostsListResponseDto;
+import seoul.bulletin.dto.PostsUpdateRequestDto;
 
 import java.io.*;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -14,10 +18,10 @@ public class StorageRepository {
     private final FileRepository fileRepository;
 
     @Transactional
-    public Long save(Object target) {
+    public Long save(Posts target) {
         try {
             fileRepository.openFileWriter("test.txt", "index.txt");
-            Posts savedPost = postsRepository.save((Posts) target);
+            Posts savedPost = postsRepository.save(target);
             String strJson = getStringFromPost(savedPost);
             fileRepository.save(strJson, savedPost.getId());
             return savedPost.getId();
@@ -51,14 +55,8 @@ public class StorageRepository {
             File indexFile = new File("index.txt");
             if (indexFile.isFile()) {
                 fileRepository.openFileReader("test.txt", "index.txt");
-                String readline = null;
-                while ((readline = fileRepository.getIndexFileBufferedReader().readLine()) != null) {
-                    if (readline.equals(id)) {
-                        postsRepository.delete(posts);
-                        fileRepository.delete(id);
-                        break;
-                    }
-                }
+                postsRepository.delete(posts);
+                fileRepository.delete(id);
                 return true;
             }
         } catch (FileNotFoundException e) {
@@ -68,11 +66,23 @@ public class StorageRepository {
         }
         return false;
     }
-//
-//    @Transactional
-//    public Long udpate(Long id, T from) {
-//
-//    }
 
+    @Transactional
+    public Long update(Long id, PostsUpdateRequestDto requestDto) {
+        Posts posts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
+        posts.update(requestDto.getTitle(), requestDto.getContent());
+        try {
+            fileRepository.update(getStringFromPost(posts), id);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
 
+    @Transactional
+    public List<PostsListResponseDto> getPostsListResponseDtos() {
+        return postsRepository.findAllDesc().stream()
+                .map(PostsListResponseDto::new)
+                .collect(Collectors.toList());
+    }
 }
