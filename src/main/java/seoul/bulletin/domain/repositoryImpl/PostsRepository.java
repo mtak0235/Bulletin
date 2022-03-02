@@ -1,7 +1,8 @@
-package seoul.bulletin.domain;
+package seoul.bulletin.domain.repositoryImpl;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import seoul.bulletin.domain.entity.Posts;
 
 import java.util.List;
 

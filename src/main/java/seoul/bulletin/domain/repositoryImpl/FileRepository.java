@@ -1,4 +1,4 @@
-package seoul.bulletin.domain;
+package seoul.bulletin.domain.repositoryImpl;
 
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package seoul.bulletin.domain;
+package seoul.bulletin.domain.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

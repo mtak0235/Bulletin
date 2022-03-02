@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import seoul.bulletin.domain.Posts;
+import seoul.bulletin.domain.entity.Posts;
 
 @Getter
 @Setter

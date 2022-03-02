@@ -1,7 +1,7 @@
 package seoul.bulletin.dto;
 
 import lombok.Getter;
-import seoul.bulletin.domain.Posts;
+import seoul.bulletin.domain.entity.Posts;
 
 @Getter
 public class PostsResponseDto {

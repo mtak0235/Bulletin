@@ -2,8 +2,8 @@ package seoul.bulletin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import seoul.bulletin.domain.Posts;
-import seoul.bulletin.domain.PostsRepository;
+import seoul.bulletin.domain.entity.Posts;
+import seoul.bulletin.domain.repositoryImpl.PostsRepository;
 import seoul.bulletin.domain.StorageRepository;
 import seoul.bulletin.dto.PostsListResponseDto;
 import seoul.bulletin.dto.PostsResponseDto;
@@ -13,7 +13,6 @@ import seoul.bulletin.dto.PostsUpdateRequestDto;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service

@@ -1,15 +1,16 @@
-package seoul.bulletin.domain;
+package seoul.bulletin.domain.entity;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import seoul.bulletin.domain.entity.BaseTimeEntity;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Posts extends BaseTimeEntity{
+public class Posts extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

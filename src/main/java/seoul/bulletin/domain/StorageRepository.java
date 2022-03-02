@@ -3,6 +3,9 @@ package seoul.bulletin.domain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import seoul.bulletin.domain.entity.Posts;
+import seoul.bulletin.domain.repositoryImpl.FileRepository;
+import seoul.bulletin.domain.repositoryImpl.PostsRepository;
 import seoul.bulletin.dto.PostsListResponseDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
 
