@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import seoul.bulletin.domain.entity.Posts;
-import seoul.bulletin.domain.repositoryImpl.PostsRepository;
+import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,11 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class PostsRepositoryTest {
     @Autowired
-    PostsRepository postsRepository;
+    MySQLPostsRepository mySQLPostsRepository;
 
     @AfterEach
     public void cleanup() {
-        postsRepository.deleteAll();
+        mySQLPostsRepository.deleteAll();
     }
 
     @Test
@@ -35,12 +35,12 @@ public class PostsRepositoryTest {
         String title = "이것은 제목";
         String content = "이것은 내용";
         String author = "이것은 글쓴이";
-        Posts tmp = postsRepository.save(Posts.builder()
+        Posts tmp = mySQLPostsRepository.save(Posts.builder()
                 .title(title)
                 .content(content)
                 .author(author)
                 .build());
-        List<Posts> postsList = postsRepository.findAll();
+        List<Posts> postsList = mySQLPostsRepository.findAll();
         Posts posts = postsList.get(0);
         assertThat(posts.getTitle()).isEqualTo(title);
         assertThat(posts.getContent()).isEqualTo(content);
@@ -53,14 +53,14 @@ public class PostsRepositoryTest {
         String content = "이것은 내용";
         String author = "이것은 글쓴이";
         Posts tmp;
-        tmp = postsRepository.save(Posts.builder()
+        tmp = mySQLPostsRepository.save(Posts.builder()
                 .title(title)
                 .content(content)
                 .author(author)
                 .build());
-        List<Posts> postsList = postsRepository.findAll();
-        postsRepository.delete(postsList.get(0));
-        org.junit.jupiter.api.Assertions.assertThrows(NoSuchElementException.class, () -> postsRepository.findById(tmp.getId()).get());
+        List<Posts> postsList = mySQLPostsRepository.findAll();
+        mySQLPostsRepository.delete(postsList.get(0));
+        org.junit.jupiter.api.Assertions.assertThrows(NoSuchElementException.class, () -> mySQLPostsRepository.findById(tmp.getId()).get());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class PostsRepositoryTest {
         String title = "이것은 제목";
         String content = "이것은 내용";
         String author = "이것은 글쓴이";
-        Posts savedPosts = postsRepository.save(Posts.builder()
+        Posts savedPosts = mySQLPostsRepository.save(Posts.builder()
                 .title(title)
                 .content(content)
                 .author(author)
@@ -84,12 +84,12 @@ public class PostsRepositoryTest {
     @Test
     public void BaseTimeEntity_등록() {
         LocalDateTime now = LocalDateTime.of(2022, 2, 23, 0, 0, 0);
-        postsRepository.save(Posts.builder()
+        mySQLPostsRepository.save(Posts.builder()
                 .title("이건 제목")
                 .content("이건 내용")
                 .author("이것은 글쓴이")
                 .build());
-        List<Posts> postsList = postsRepository.findAll();
+        List<Posts> postsList = mySQLPostsRepository.findAll();
         Posts posts = postsList.get(0);
         assertThat(posts.getCreatedDate()).isAfter(now);
         assertThat(posts.getModifiedDate()).isAfter(now);

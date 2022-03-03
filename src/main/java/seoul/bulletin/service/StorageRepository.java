@@ -1,11 +1,11 @@
-package seoul.bulletin.domain;
+package seoul.bulletin.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import seoul.bulletin.domain.entity.Posts;
-import seoul.bulletin.domain.repositoryImpl.FileRepository;
-import seoul.bulletin.domain.repositoryImpl.PostsRepository;
+import seoul.bulletin.domain.repositoryImpl.FilePostsRepository;
+import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
 import seoul.bulletin.dto.PostsListResponseDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
 
@@ -15,18 +15,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Repository
+@Service
 public class StorageRepository {
-    private final PostsRepository postsRepository;
-    private final FileRepository fileRepository;
+    private final MySQLPostsRepository mySQLPostsRepository;
+    private final FilePostsRepository filePostsRepository;
 
     @Transactional
     public Long save(Posts target) {
         try {
-            fileRepository.openFileWriter("test.txt", "index.txt");
-            Posts savedPost = postsRepository.save(target);
+            filePostsRepository.openFileWriter("test.txt", "index.txt");
+            Posts savedPost = mySQLPostsRepository.save(target);
             String strJson = getStringFromPost(savedPost);
-            fileRepository.save(strJson, savedPost.getId());
+            filePostsRepository.save(strJson, savedPost.getId());
             return savedPost.getId();
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,20 +46,20 @@ public class StorageRepository {
 
     @Transactional
     public Optional<Posts> findById(Long id) {
-        return postsRepository.findById(id);
+        return mySQLPostsRepository.findById(id);
     }
 
     @Transactional
     public boolean delete(Long id) {
         try {
-            fileRepository.openFileWriter("test.txt", "index.txt");
-            Posts posts = postsRepository.findById(id)
+            filePostsRepository.openFileWriter("test.txt", "index.txt");
+            Posts posts = mySQLPostsRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
             File indexFile = new File("index.txt");
             if (indexFile.isFile()) {
-                fileRepository.openFileReader("test.txt", "index.txt");
-                postsRepository.delete(posts);
-                fileRepository.delete(id);
+                filePostsRepository.openFileReader("test.txt", "index.txt");
+                mySQLPostsRepository.delete(posts);
+                filePostsRepository.delete(id);
                 return true;
             }
         } catch (FileNotFoundException e) {
@@ -72,10 +72,10 @@ public class StorageRepository {
 
     @Transactional
     public Long update(Long id, PostsUpdateRequestDto requestDto) {
-        Posts posts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
+        Posts posts = mySQLPostsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
         posts.update(requestDto.getTitle(), requestDto.getContent());
         try {
-            fileRepository.update(getStringFromPost(posts), id);
+            filePostsRepository.update(getStringFromPost(posts), id);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,7 +84,7 @@ public class StorageRepository {
 
     @Transactional
     public List<PostsListResponseDto> getPostsListResponseDtos() {
-        return postsRepository.findAllDesc().stream()
+        return mySQLPostsRepository.findAllDesc().stream()
                 .map(PostsListResponseDto::new)
                 .collect(Collectors.toList());
     }

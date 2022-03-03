@@ -1,11 +1,14 @@
 package seoul.bulletin.domain.repositoryImpl;
 
 import org.springframework.stereotype.Component;
+import seoul.bulletin.domain.PostsRepository;
+import seoul.bulletin.domain.entity.Posts;
 
 import java.io.*;
+import java.util.Optional;
 
 @Component
-public class FileRepository {
+public class FilePostsRepository implements PostsRepository {
 
     private FileWriter dataFileWriter;
     private BufferedWriter dataFileBufferedWriter;
@@ -49,4 +52,5 @@ public class FileRepository {
         delete(id);
         save(toSave, id);
     }
+
 }

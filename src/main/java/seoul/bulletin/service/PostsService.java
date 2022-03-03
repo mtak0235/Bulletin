@@ -3,8 +3,7 @@ package seoul.bulletin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seoul.bulletin.domain.entity.Posts;
-import seoul.bulletin.domain.repositoryImpl.PostsRepository;
-import seoul.bulletin.domain.StorageRepository;
+import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
 import seoul.bulletin.dto.PostsListResponseDto;
 import seoul.bulletin.dto.PostsResponseDto;
 import seoul.bulletin.dto.PostsSaveRequestDto;
@@ -19,7 +18,7 @@ import java.util.Optional;
 public class PostsService {
 
     private final StorageRepository storageRepository;
-    private final PostsRepository postsRepository;
+    private final MySQLPostsRepository mySQLPostsRepository;
 
     @Transactional
     public Long save(PostsSaveRequestDto requestDto) {

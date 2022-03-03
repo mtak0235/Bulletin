@@ -44,8 +44,8 @@ public class PostController {
         PostsResponseDto dto = postsService.findById(id);
         PostsUpdateRequestDto postsUpdateRequestDto = new PostsUpdateRequestDto();
         postsUpdateRequestDto.setId(dto.getId());
-        postsUpdateRequestDto.setContent(dto.getContent());
-        postsUpdateRequestDto.setTitle(dto.getTitle());
+        postsUpdateRequestDto.setContent(dto.getContent());//
+        postsUpdateRequestDto.setTitle(dto.getTitle());//
         model.addAttribute("form", postsUpdateRequestDto);
         model.addAttribute("prev", dto);
         return "post_update";

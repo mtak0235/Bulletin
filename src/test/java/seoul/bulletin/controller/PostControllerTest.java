@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import seoul.bulletin.domain.entity.Posts;
-import seoul.bulletin.domain.repositoryImpl.PostsRepository;
+import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
 import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
 
@@ -29,14 +29,14 @@ class PostControllerTest {
     private int port;
 
     @Autowired
-    private PostsRepository postsRepository;
+    private MySQLPostsRepository mySQLPostsRepository;
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @After
     public void cleanup() {
-        postsRepository.deleteAll();
+        mySQLPostsRepository.deleteAll();
     }
 
     @Test
@@ -53,7 +53,7 @@ class PostControllerTest {
         ResponseEntity<Long> responseEntity = testRestTemplate.postForEntity(url, requestDto, Long.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isGreaterThan(0L);
-        List<Posts> all = postsRepository.findAll();
+        List<Posts> all = mySQLPostsRepository.findAll();
         assertThat(all.get(0).getTitle()).isEqualTo(title);
         assertThat(all.get(0).getContent()).isEqualTo(content);
         assertThat(all.get(0).getAuthor()).isEqualTo(author);
@@ -64,7 +64,7 @@ class PostControllerTest {
         String title = "이것은 제목";
         String content = "이것은 내용";
         String author = "이것은 글쓴이";
-        Posts savedPosts = postsRepository.save(Posts.builder()
+        Posts savedPosts = mySQLPostsRepository.save(Posts.builder()
                 .title(title)
                 .content(content)
                 .author(author)
@@ -81,7 +81,7 @@ class PostControllerTest {
         ResponseEntity<Long> responseEntity = testRestTemplate.exchange(url, HttpMethod.PUT, requestEntity, Long.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isGreaterThan(0L);
-        List<Posts> all = postsRepository.findAll();
+        List<Posts> all = mySQLPostsRepository.findAll();
         assertThat(all.get(0).getTitle()).isEqualTo(expectedTitle);
         assertThat(all.get(0).getContent()).isEqualTo(expectedContent);
     }
