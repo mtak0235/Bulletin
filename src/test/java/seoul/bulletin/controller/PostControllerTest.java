@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import seoul.bulletin.domain.entity.Posts;
-import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
+import seoul.bulletin.domain.PostsRepository;
 import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
 
@@ -29,7 +29,7 @@ class PostControllerTest {
     private int port;
 
     @Autowired
-    private MySQLPostsRepository mySQLPostsRepository;
+    private PostsRepository mySQLPostsRepository;
 
     @Autowired
     private TestRestTemplate testRestTemplate;

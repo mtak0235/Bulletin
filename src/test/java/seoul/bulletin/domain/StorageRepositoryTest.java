@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
-import seoul.bulletin.service.StorageRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -16,14 +14,11 @@ import seoul.bulletin.service.StorageRepository;
 class StorageRepositoryTest {
 
     @Autowired
-    private StorageRepository storageRepository;
-    @Autowired
-    private MySQLPostsRepository mySQLPostsRepository;
+    private PostsRepository postsRepository;
 
     @AfterEach
     public void cleanup() {
-        mySQLPostsRepository.deleteAll();
+        postsRepository.deleteAll();
     }
-
 
 }

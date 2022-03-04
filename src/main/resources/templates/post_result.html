@@ -16,6 +16,7 @@
 </div>
 
 <a role="button" th:href="@{/posts/update/{identity} (identity=${post.id})}" class="btn btn-primary">글 수정</a>
+<a role="button" th:href="@{/}" class="btn btn-primary">메인으로</a>
 <form th:action="@{/posts/{identity} (identity=${post.id})}" method="post">
     <input type="hidden" name="_method" value="delete"/>
     <button id="delete-btn">삭제</button>

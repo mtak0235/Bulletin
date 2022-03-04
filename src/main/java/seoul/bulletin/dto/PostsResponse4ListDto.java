@@ -6,13 +6,13 @@ import seoul.bulletin.domain.entity.Posts;
 import java.time.LocalDateTime;
 
 @Getter
-public class PostsListResponseDto {
+public class PostsResponse4ListDto {
     private Long id;
     private String title;
     private String author;
     private LocalDateTime modifiedDate;
 
-    public PostsListResponseDto(Posts entity) {
+    public PostsResponse4ListDto(Posts entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
         this.author = entity.getAuthor();

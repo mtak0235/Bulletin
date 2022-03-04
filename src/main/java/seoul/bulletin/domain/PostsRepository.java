@@ -1,6 +1,15 @@
 package seoul.bulletin.domain;
 
-public interface PostsRepository {
-//추가 저장 매체에 공공으로 구현해야 하는 부분 -. https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=hankk20&logNo=221542810406
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import seoul.bulletin.domain.PostsFileRepository;
+import seoul.bulletin.domain.entity.Posts;
+
+import java.util.List;
+
+public interface PostsRepository extends JpaRepository<Posts, Long>, PostsFileRepository, PostsExcelRepository, PostsEmailRepository {
+    @Query("SELECT p FROM Posts AS p ORDER BY p.id DESC")
+    List<Posts> findAllDesc();
+
 
 }

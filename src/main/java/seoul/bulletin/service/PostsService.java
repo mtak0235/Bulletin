@@ -3,47 +3,78 @@ package seoul.bulletin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seoul.bulletin.domain.entity.Posts;
-import seoul.bulletin.domain.repositoryImpl.MySQLPostsRepository;
-import seoul.bulletin.dto.PostsListResponseDto;
+import seoul.bulletin.domain.PostsRepository;
+import seoul.bulletin.dto.PostsResponse4ListDto;
 import seoul.bulletin.dto.PostsResponseDto;
 import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class PostsService {
 
-    private final StorageRepository storageRepository;
-    private final MySQLPostsRepository mySQLPostsRepository;
+    private final PostsRepository postsRepository;
+    private final Post2XService post2XService;
 
     @Transactional
     public Long save(PostsSaveRequestDto requestDto) {
-        return storageRepository.save(requestDto.toEntiy());
+        Posts savedPost = postsRepository.save(requestDto.toEntiy());
+        try {
+            postsRepository.saveOnFile(post2XService.post2File(savedPost));
+            postsRepository.saveOnEmail(post2XService.post2Email(savedPost));
+            postsRepository.saveOnExcel(post2XService.post2Excel(savedPost));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return savedPost.getId();
     }
 
     @Transactional
     public boolean delete(Long id) {
-        storageRepository.delete(id);
-        return !storageRepository.findById(id).isPresent();
+        Posts postToDelete = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id=" + id));
+        postsRepository.delete(postToDelete);
+        try{
+            postsRepository.deleteOnFile(id);
+            postsRepository.deleteOnEmail(id);
+            postsRepository.deleteOnExcel(id);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return !postsRepository.findById(id).isPresent();
     }
 
     @Transactional
     public Long update(Long id, PostsUpdateRequestDto requestDto) {
-        return storageRepository.update(id, requestDto);
+        Posts post = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
+        post.update(requestDto.getTitle(), requestDto.getContent());
+        try {
+            postsRepository.updateOnFile(post2XService.post2File(post));
+            postsRepository.updateOnEmail(post2XService.post2Email(post));
+            postsRepository.updateOnExcel(post2XService.post2Excel(post));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return post.getId();
     }
 
     @Transactional
     public PostsResponseDto findById(Long id) {
-        Optional<Posts> post = storageRepository.findById(id);
+        Optional<Posts> post = postsRepository.findById(id);
         return new PostsResponseDto(post.get());
     }
 
     @Transactional
-    public List<PostsListResponseDto> findAllDesc() {
-        return storageRepository.getPostsListResponseDtos();
+    public List<PostsResponse4ListDto> findAllDesc() {
+        return postsRepository.findAllDesc().stream()
+                .map(PostsResponse4ListDto::new)
+                .collect(Collectors.toList());
     }
 }
