@@ -12,6 +12,5 @@ public interface PostsFileRepository {
 
     Long saveOnFile(PostOnFileDto post) throws IOException;
 
-//추가 저장 매체에 공공으로 구현해야 하는 부분 -. https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=hankk20&logNo=221542810406
-
+    PostOnFileDto findByIdOnFile(Long id) throws Exception;
 }

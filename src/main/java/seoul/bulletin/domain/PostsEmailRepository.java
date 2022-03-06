@@ -4,7 +4,7 @@ import seoul.bulletin.dto.PostOnEmailDto;
 
 public interface PostsEmailRepository {
     String authUserName = "jesustark0235@gmail.com";
-    String authPassword = "***";
+    String authPassword = "*";
 
     boolean updateOnEmail(PostOnEmailDto post);
 

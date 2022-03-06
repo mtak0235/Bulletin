@@ -8,4 +8,6 @@ public interface PostsExcelRepository {
     boolean deleteOnExcel(Long id);
 
     Long saveOnExcel(PostOnExcelDto posts);
+
+    PostOnExcelDto findByIdOnExcel(Long id);
 }

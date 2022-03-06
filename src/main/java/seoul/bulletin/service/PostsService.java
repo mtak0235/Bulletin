@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seoul.bulletin.domain.entity.Posts;
 import seoul.bulletin.domain.PostsRepository;
-import seoul.bulletin.dto.PostsResponse4ListDto;
-import seoul.bulletin.dto.PostsResponseDto;
-import seoul.bulletin.dto.PostsSaveRequestDto;
-import seoul.bulletin.dto.PostsUpdateRequestDto;
+import seoul.bulletin.dto.*;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -67,8 +64,19 @@ public class PostsService {
 
     @Transactional
     public PostsResponseDto findById(Long id) {
-        Optional<Posts> post = postsRepository.findById(id);
-        return new PostsResponseDto(post.get());
+        Posts postOnDB = postsRepository.findById(id).get();
+        PostOnFileDto postOnFile = null;
+        PostOnExcelDto postOnExcel = null;
+        try {
+            postOnFile = postsRepository.findByIdOnFile(id);
+            postOnExcel = postsRepository.findByIdOnExcel(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //post format = id + title + content + author
+        //무슨 데이터를 줄지 조작 가능했으면 좋겠다.
+        PostsResponseDto post = new PostsResponseDto(postOnDB, postOnFile, postOnExcel);
+        return post;
     }
 
     @Transactional

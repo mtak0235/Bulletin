@@ -41,6 +41,7 @@ public class PostController {
 
     @GetMapping("/posts/update/{id}")
     public String postsUpdate(@PathVariable Long id, Model model) {
+
         PostsResponseDto dto = postsService.findById(id);
         PostsUpdateRequestDto postsUpdateRequestDto = new PostsUpdateRequestDto();
         postsUpdateRequestDto.setId(dto.getId());

@@ -10,6 +10,4 @@ import java.util.List;
 public interface PostsRepository extends JpaRepository<Posts, Long>, PostsFileRepository, PostsExcelRepository, PostsEmailRepository {
     @Query("SELECT p FROM Posts AS p ORDER BY p.id DESC")
     List<Posts> findAllDesc();
-
-
 }

@@ -1,5 +1,6 @@
 package seoul.bulletin.domain.repositoryImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import seoul.bulletin.domain.PostsFileRepository;
 import seoul.bulletin.dto.PostOnFileDto;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 @Component
 public class PostsFileRepositoryImpl implements PostsFileRepository {
@@ -35,7 +37,7 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
         Path newFileName = Paths.get("data.txt");
         Files.move(tmpFileName, newFileName, StandardCopyOption.REPLACE_EXISTING);
         tmpBW.close();
-        return false;
+        return true;
     }
 
     @Override
@@ -70,13 +72,27 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
         return post.getId();
     }
 
+    @Override
+    public PostOnFileDto findByIdOnFile(Long id) throws Exception {
+        openFileReader("data.txt");
+        String readLine = null;
+        while ((readLine = this.dataFileBufferedReader.readLine()) != null) {
+            if (readLine.contains("{\"id\":" + id))
+                break;
+        }
+        this.dataFileBufferedReader.close();
+        ObjectMapper mapper = new ObjectMapper();
+        PostOnFileDto post = mapper.readValue(readLine, PostOnFileDto.class);
+        return post;
+    }
+
     private String getStringFromPostOnFileDto(PostOnFileDto post) {
         String strJson = "{" +
                 "\"id\":" + post.getId() +
-                ",\"title\":" + post.getTitle() +
-                ",\"content\":" + post.getContent() +
-                ",\"author\":" + post.getAuthor() +
-                "}";
+                ",\"title\":\"" + post.getTitle() +
+                "\",\"content\":\"" + post.getContent() +
+                "\",\"author\":\"" + post.getAuthor() +
+                "\"}";
         return strJson;
     }
 
