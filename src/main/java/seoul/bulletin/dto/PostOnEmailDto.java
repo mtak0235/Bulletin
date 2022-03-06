@@ -1,7 +1,9 @@
 package seoul.bulletin.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class PostOnEmailDto {
     private Long id;
     private String title;

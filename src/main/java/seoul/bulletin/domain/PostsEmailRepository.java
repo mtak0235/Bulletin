@@ -1,10 +1,11 @@
 package seoul.bulletin.domain;
 
-import seoul.bulletin.domain.entity.Posts;
 import seoul.bulletin.dto.PostOnEmailDto;
-import seoul.bulletin.dto.PostsUpdateRequestDto;
 
 public interface PostsEmailRepository {
+    String authUserName = "jesustark0235@gmail.com";
+    String authPassword = "***";
+
     boolean updateOnEmail(PostOnEmailDto post);
 
     boolean deleteOnEmail(Long id);
