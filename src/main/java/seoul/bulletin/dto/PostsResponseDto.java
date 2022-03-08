@@ -1,10 +1,12 @@
 package seoul.bulletin.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import seoul.bulletin.domain.entity.Posts;
 
 import java.util.Optional;
 
+@NoArgsConstructor
 @Getter
 public class PostsResponseDto {
     private Long id;
