@@ -7,7 +7,7 @@ import seoul.bulletin.domain.PostsRepository;
 import seoul.bulletin.dto.*;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,5 +84,29 @@ public class PostsService {
         return postsRepository.findAllDesc().stream()
                 .map(PostsResponse4ListDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public String getStringFromFile(String fileName) {
+        String readline = null;
+        StringBuffer readlineB = new StringBuffer();
+        File file = new File(fileName);
+        if (!file.isFile()) {
+            return null;
+        }
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(fileName);
+            br = new BufferedReader(fr);
+            while ((readline = br.readLine()) != null) {
+                readlineB.append(readline);
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return readlineB.toString();
     }
 }

@@ -26,10 +26,9 @@ public class PostApiController {
     /*
     json return
     */
-    @GetMapping("/posts/api/formatted-input/{id}")
+    @GetMapping("/posts/api/{id}")
     public String postData(@PathVariable Long id) throws JsonProcessingException {
         PostsResponseDto post = postsService.findById(id);
-
         return saveData(objectMapper.writeValueAsString(post));
     }
 
@@ -47,5 +46,15 @@ public class PostApiController {
         post2Save.setAuthor(req.getAuthor());
         postsService.save(post2Save);
         return "redirect:/";
+    }
+
+    /*
+     * 파일을 읽어와서 saveData 호출하면 됨/
+     * */
+
+    @GetMapping("/posts/file/{file}")
+    public String postFile(@PathVariable String file) throws JsonProcessingException {
+        String post = postsService.getStringFromFile(file);
+        return saveData(post);
     }
 }
