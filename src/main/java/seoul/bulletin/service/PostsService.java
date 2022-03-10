@@ -1,7 +1,9 @@
 package seoul.bulletin.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import seoul.bulletin.domain.entity.Posts;
 import seoul.bulletin.domain.PostsRepository;
 import seoul.bulletin.dto.*;
@@ -9,7 +11,7 @@ import seoul.bulletin.dto.*;
 import javax.transaction.Transactional;
 import java.io.*;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final Post2XService post2XService;
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Transactional
     public Long save(PostsSaveRequestDto requestDto) {
@@ -108,5 +111,16 @@ public class PostsService {
             e.printStackTrace();
         }
         return readlineB.toString();
+    }
+
+    @Transactional
+    public PostsResponseDto getPostInMtakPostAPI(Long id) {
+        return restTemplate.getForObject("http://localhost:8080/posts/api?id={id}",
+                PostsResponseDto.class, id);
+    }
+
+    @Transactional
+    public ResponseEntity<Long> savePostInMtakPostAPI(PostsResponseDto post) {
+        return restTemplate.postForEntity("http://localhost:8080/posts/api", post, Long.class);
     }
 }
