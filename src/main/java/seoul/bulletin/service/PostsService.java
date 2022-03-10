@@ -1,6 +1,8 @@
 package seoul.bulletin.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.json.JSONParser;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,9 +12,8 @@ import seoul.bulletin.dto.*;
 
 import javax.transaction.Transactional;
 import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.net.*;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -122,5 +123,24 @@ public class PostsService {
     @Transactional
     public ResponseEntity<Long> savePostInMtakPostAPI(PostsResponseDto post) {
         return restTemplate.postForEntity("http://localhost:8080/posts/api", post, Long.class);
+    }
+
+    @Transactional
+    public PostsSaveRequestDto getPostInOutsidePostApi(String name) throws IOException {
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriFood/FdImage/getKoreanFoodFdImageList"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw=="); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("service_Type","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml 과 json 형식 지원*/
+        urlBuilder.append("&" + URLEncoder.encode("Page_No","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
+        urlBuilder.append("&" + URLEncoder.encode("Page_Size","UTF-8") + "=" + URLEncoder.encode("2", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("food_Name","UTF-8") + "=" + URLEncoder.encode(name, "UTF-8")); /*음식 명 (검색어 입력값 포함 검색)*/
+        String givenData = restTemplate.getForObject(urlBuilder.toString(), String.class);
+        JSONParser jsonParser = new JSONParser();
+
+        Map<String, String> params = new HashMap<>();
+
+        params.put("name", "jaeyeon");
+
+        //순서대로 url, method, entity(header, params), return type
+        return restTemplate.exchange("http://localhost:8080/entity?name={name}", HttpMethod.GET, httpEntity, String.class, params);
     }
 }

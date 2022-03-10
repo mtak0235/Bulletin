@@ -12,6 +12,9 @@ import seoul.bulletin.dto.PostsResponseDto;
 import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.service.PostsService;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,8 +91,12 @@ public class PostApiController {
      * */
     @ResponseBody
     @GetMapping("/posts/outside-api/")
-    public String saveFormFromOusideApi() {
-
+    public Map<String, String> saveFormsFromOutsideApi(@RequestParam("target") String name) throws IOException {
+        PostsSaveRequestDto givenPost= postsService.getPostInOutsidePostApi(name);
+        Long savedId = postsService.save(givenPost);
+        Map<String, String> ret = new HashMap<>();
+        ret.put("id",savedId.toString());
+        return ret;
     }
 
     /*
