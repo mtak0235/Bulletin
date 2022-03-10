@@ -14,7 +14,8 @@ public class OutsideApi {
         urlBuilder.append("&" + URLEncoder.encode("service_Type","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml 과 json 형식 지원*/
         urlBuilder.append("&" + URLEncoder.encode("Page_No","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
         urlBuilder.append("&" + URLEncoder.encode("Page_Size","UTF-8") + "=" + URLEncoder.encode("2", "UTF-8")); /*한 페이지 결과 수*/
-        urlBuilder.append("&" + URLEncoder.encode("food_Name","UTF-8") + "=" + URLEncoder.encode("밥", "UTF-8")); /*음식 명 (검색어 입력값 포함 검색)*/
+        urlBuilder.append("&" + URLEncoder.encode("food_Name", "UTF-8") + "=" + URLEncoder.encode("밥", "UTF-8")); /*음식 명 (검색어 입력값 포함 검색)*/
+        System.out.println("urlBuilder = " + urlBuilder);
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

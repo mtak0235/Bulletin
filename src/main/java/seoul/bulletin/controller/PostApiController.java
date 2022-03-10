@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -90,12 +91,12 @@ public class PostApiController {
      * 외부 api 호출해서 저장하기
      * */
     @ResponseBody
-    @GetMapping("/posts/outside-api/")
-    public Map<String, String> saveFormsFromOutsideApi(@RequestParam("target") String name) throws IOException {
-        PostsSaveRequestDto givenPost= postsService.getPostInOutsidePostApi(name);
+    @GetMapping("/posts/outside-api/{target}")
+    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name) throws IOException, ParseException {
+        PostsSaveRequestDto givenPost = postsService.getPostInOutsidePostApi(name);
         Long savedId = postsService.save(givenPost);
         Map<String, String> ret = new HashMap<>();
-        ret.put("id",savedId.toString());
+        ret.put("id", savedId.toString());
         return ret;
     }
 
