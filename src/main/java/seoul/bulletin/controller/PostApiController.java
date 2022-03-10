@@ -14,8 +14,7 @@ import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.service.PostsService;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +91,7 @@ public class PostApiController {
      * */
     @ResponseBody
     @GetMapping("/posts/outside-api/{target}")
-    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name) throws IOException, ParseException {
+    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name) throws IOException, ParseException, URISyntaxException {
         PostsSaveRequestDto givenPost = postsService.getPostInOutsidePostApi(name);
         Long savedId = postsService.save(givenPost);
         Map<String, String> ret = new HashMap<>();
@@ -100,38 +99,4 @@ public class PostApiController {
         return ret;
     }
 
-    /*
-    json return
-    */
-    @GetMapping("/posts/api/{id}")
-    public String postData(@PathVariable Long id) throws JsonProcessingException {
-        PostsResponseDto post = postsService.findById(id);
-        return saveData(objectMapper.writeValueAsString(post));
-    }
-
-    /*
-     * json get redirect tp main page
-     * */
-    @ResponseBody
-    @PostMapping("/posts/api/save")
-    public String saveData(@RequestBody String msg) throws JsonProcessingException {
-        System.out.println("msg = " + msg);
-        PostsResponseDto req = objectMapper.readValue(msg, PostsResponseDto.class);
-        PostsSaveRequestDto post2Save = new PostsSaveRequestDto();
-        post2Save.setTitle(req.getTitle());
-        post2Save.setContent(req.getContent());
-        post2Save.setAuthor(req.getAuthor());
-        postsService.save(post2Save);
-        return "redirect:/";
-    }
-
-    /*
-     * 파일을 읽어와서 saveData 호출하면 됨/
-     * */
-
-    @GetMapping("/posts/file/{file}")
-    public String postFile(@PathVariable String file) throws JsonProcessingException {
-        String post = postsService.getStringFromFile(file);
-        return saveData(post);
-    }
 }

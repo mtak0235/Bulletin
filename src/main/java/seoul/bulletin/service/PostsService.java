@@ -9,14 +9,16 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import seoul.bulletin.domain.entity.Posts;
+import org.springframework.web.util.UriComponentsBuilder;
 import seoul.bulletin.domain.PostsRepository;
+import seoul.bulletin.domain.entity.Posts;
 import seoul.bulletin.dto.*;
 
 import javax.transaction.Transactional;
 import java.io.*;
 import java.net.*;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -26,7 +28,8 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final Post2XService post2XService;
-    private RestTemplate restTemplate = new RestTemplate();
+    private         RestTemplate restTemplate = new RestTemplate();
+
 
     @Transactional
     public Long save(PostsSaveRequestDto requestDto) {
@@ -131,26 +134,22 @@ public class PostsService {
     }
 
     @Transactional
-    public PostsSaveRequestDto getPostInOutsidePostApi(String name) throws IOException, ParseException {
+    public PostsSaveRequestDto getPostInOutsidePostApifake(String name) throws IOException, ParseException {
+
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriFood/FdImage/getKoreanFoodFdImageList"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw=="); /*Service Key*/
-        urlBuilder.append("&" + URLEncoder.encode("service_Type","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml 과 json 형식 지원*/
-        urlBuilder.append("&" + URLEncoder.encode("Page_No","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
-        urlBuilder.append("&" + URLEncoder.encode("Page_Size","UTF-8") + "=" + URLEncoder.encode("2", "UTF-8")); /*한 페이지 결과 수*/
-        urlBuilder.append("&" + URLEncoder.encode("food_Name", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8")); /*음식 명 (검색어 입력값 포함 검색)*/
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            sb.append(line);
-        }
-        rd.close();
-        conn.disconnect();
-        String givenData = sb.toString();
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw=="); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("service_Type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml 과 json 형식 지원*/
+        urlBuilder.append("&" + URLEncoder.encode("Page_No", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
+        urlBuilder.append("&" + URLEncoder.encode("Page_Size", "UTF-8") + "=" + URLEncoder.encode("2", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("food_Name", "UTF-8") + "=" + URLEncoder.encode("콩", "UTF-8")); /*음식 명 (검색어 입력값 포함 검색)*/
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<HttpHeaders> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> resp = restTemplate.exchange(URI.create(urlBuilder.toString()), HttpMethod.GET, entity, String.class);
+
+        String givenData = resp.getBody();
         System.out.println("givenData = " + givenData);
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject) jsonParser.parse(givenData);
@@ -160,7 +159,77 @@ public class PostsService {
         PostsSaveRequestDto givenPost = PostsSaveRequestDto.builder()
                 .title((String) target.get("upper_Fd_Grupp_Nm"))
                 .content((String) target.get("fd_Nm"))
-                .author((String) target.get("fr_Grupp_Nm"))
+                .author((String) target.get("fd_Grupp_Nm"))
+                .build();
+        return givenPost;
+    }
+
+    public PostsSaveRequestDto getPostInOutsidePostApifake2(String name) throws IOException, ParseException, URISyntaxException {
+//        URI uri = UriComponentsBuilder
+//                .fromUriString("http://apis.data.go.kr/1390802/AgriFood/FdImage/getKoreanFoodFdImageList")
+//                .queryParam("serviceKey", "csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw==")
+//                .queryParam("service_Type", "json")
+//                .queryParam("Page_No", "1")
+//                .queryParam("Page_Size", "2")
+//                .queryParam("food_Name", name)
+//                .build()
+//                .toUri();
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1390802/AgriFood/FdImage/getKoreanFoodFdImageList"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw=="); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("service_Type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*xml 과 json 형식 지원*/
+        urlBuilder.append("&" + URLEncoder.encode("Page_No", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
+        urlBuilder.append("&" + URLEncoder.encode("Page_Size", "UTF-8") + "=" + URLEncoder.encode("2", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("food_Name", "UTF-8") + "=" + URLEncoder.encode("콩", "UTF-8")); /*음식 명 (검색어 입력값 포함 검색)*/
+
+        URI uri = new URI(urlBuilder.toString());
+        System.out.println("uri.toString() = " + uri.toString());
+        RequestEntity request = RequestEntity
+                .get(uri)
+                .header("Content-type", "application/json")
+                .build();
+        ResponseEntity<String> givenData = restTemplate.exchange(request, String.class);
+        System.out.println("givenData = " + givenData);
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(givenData.getBody());
+        JSONObject response = (JSONObject) jsonObject.get("response");
+        JSONArray list = (JSONArray) response.get("list");
+        JSONObject target = (JSONObject) list.get(0);
+        PostsSaveRequestDto givenPost = PostsSaveRequestDto.builder()
+                .title((String) target.get("upper_Fd_Grupp_Nm"))
+                .content((String) target.get("fd_Nm"))
+                .author((String) target.get("fd_Grupp_Nm"))
+                .build();
+        return givenPost;
+    }
+    public PostsSaveRequestDto getPostInOutsidePostApi(String name) throws IOException, ParseException, URISyntaxException {
+        String k = URLDecoder.decode("csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw==", "UTF-8");
+        URI uri = UriComponentsBuilder
+                .fromUriString("http://apis.data.go.kr/1390802/AgriFood/FdImage/getKoreanFoodFdImageList")
+                .queryParam("serviceKey", k)
+                .queryParam("service_Type", "json")
+                .queryParam("Page_No", "1")
+                .queryParam("Page_Size", "2")
+                .queryParam("food_Name", name)
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUri();
+
+        System.out.println("uri.toString() = " + uri.toString());
+        RequestEntity request = RequestEntity
+                .get(uri)
+                .header("Content-type", "application/json")
+                .build();
+        ResponseEntity<String> givenData = restTemplate.exchange(request, String.class);
+        System.out.println("givenData = " + givenData);
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(givenData.getBody());
+        JSONObject response = (JSONObject) jsonObject.get("response");
+        JSONArray list = (JSONArray) response.get("list");
+        JSONObject target = (JSONObject) list.get(0);
+        PostsSaveRequestDto givenPost = PostsSaveRequestDto.builder()
+                .title((String) target.get("upper_Fd_Grupp_Nm"))
+                .content((String) target.get("fd_Nm"))
+                .author((String) target.get("fd_Grupp_Nm"))
                 .build();
         return givenPost;
     }
