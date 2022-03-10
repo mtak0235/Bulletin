@@ -202,10 +202,10 @@ public class PostsService {
         return givenPost;
     }
     public PostsSaveRequestDto getPostInOutsidePostApi(String name) throws IOException, ParseException, URISyntaxException {
-        String k = URLDecoder.decode("csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw==", "UTF-8");
+//        String k = URLDecoder.decode("csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw==", "UTF-8");
         URI uri = UriComponentsBuilder
                 .fromUriString("http://apis.data.go.kr/1390802/AgriFood/FdImage/getKoreanFoodFdImageList")
-                .queryParam("serviceKey", k)
+                .queryParam("serviceKey", "csd/9isLnOcfaTZ9sdpArdEmVSBmX2L2Ml2Upn348u0yPkPYDAqp/LkA1zWCvUKMk8/1CZIiPuDhKxvp/JmuCw==")
                 .queryParam("service_Type", "json")
                 .queryParam("Page_No", "1")
                 .queryParam("Page_Size", "2")
