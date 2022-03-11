@@ -1,9 +1,16 @@
 package seoul.bulletin.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.*;
+import org.json.simple.JSONObject;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.DelegatingServerHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -13,7 +20,8 @@ import seoul.bulletin.dto.*;
 
 import javax.transaction.Transactional;
 import java.io.*;
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +34,9 @@ public class PostsService {
     private final PostsRepository postsRepository;
     private final Post2XService post2XService;
     private final Json2XService json2XService;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final JSONParser jsonParser = new JSONParser();
+
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -77,20 +88,63 @@ public class PostsService {
     @Transactional
     public PostsResponseDto findById(Long id) {
         Posts postOnDB = postsRepository.findById(id).get();
+        PostsResponseDto post = new PostsResponseDto(postOnDB);
+        return post;
+    }
+    /*
+    아이디로 3개 저장소에서 데이터를 가져온다
+    * input : id(Long)
+    * output : jsonString(Excel(id, title, author, content),
+    *  file(id, title, author, content)
+    * , database(id, title, author, content))
+    * */
+    @Transactional
+    public String findByIdOnDBNFileNExcel(Long id) throws JsonProcessingException, ParseException {
+        Posts postOnDB = null;
         PostOnFileDto postOnFile = null;
         PostOnExcelDto postOnExcel = null;
         try {
+            postOnDB = postsRepository.findById(id).get();
             postOnFile = postsRepository.findByIdOnFile(id);
             postOnExcel = postsRepository.findByIdOnExcel(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //post format = id + title + content + author
-        //무슨 데이터를 줄지 조작 가능했으면 좋겠다.
-        PostsResponseDto post = new PostsResponseDto(postOnDB, postOnFile, postOnExcel);
-        return post;
+        String DBData = objectMapper.writeValueAsString(postOnDB);
+        String excelData = objectMapper.writeValueAsString(postOnExcel);
+        String fileData = objectMapper.writeValueAsString(postOnFile);
+        JSONObject ret = new JSONObject();
+        ret.put("post-db", (JSONObject) jsonParser.parse(DBData));
+        ret.put("post-excel", (JSONObject) jsonParser.parse(excelData));
+        ret.put("post-file", (JSONObject) jsonParser.parse(fileData));
+        return ret.toJSONString();
     }
 
+    void getData(){
+        getDataFromDB();
+        getDatafromExcel();
+        getDataFromFile();
+
+    }
+
+    void getDataFromDB(id) {
+        postOnDB = postsRepository.findById(id).get();
+        if (삑사리면)
+            // log 남기고
+            else { 넘겨주자..ㅍ}
+    }
+    void getDataFromFile()
+    {
+        postOnFile = postsRepository.findByIdOnFile(id);
+    }
+    void getDatafromExcel()
+    {
+        postOnExcel = postsRepository.findByIdOnExcel(id);
+    }
+
+    object getdb() {
+
+    }
     @Transactional
     public List<PostsResponse4ListDto> findAllDesc() {
         return postsRepository.findAllDesc().stream()

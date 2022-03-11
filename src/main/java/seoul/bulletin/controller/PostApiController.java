@@ -26,8 +26,15 @@ public class PostApiController {
     private final PostsService postsService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @ResponseBody
+    @GetMapping("/posts/all-type/{id}")
+    public String getAllTypePostData(@PathVariable Long id) throws JsonProcessingException, ParseException {
+        return postsService.findByIdOnDBNFileNExcel(id);
+    }
     /*
     * 데이터 가져오기(외부 api 입장)
+    * input : id
+    * output: json( id, title, author, content), 1row
     * */
     @ResponseBody
     @GetMapping(value = "/posts/api")
@@ -41,10 +48,7 @@ public class PostApiController {
      * */
     @ResponseBody
     @PostMapping(value = "/posts/api", consumes = "application/json")
-    public ResponseEntity<Long> postSaveApi(@RequestBody String posts) throws JsonProcessingException {//졸라 다 섞인 postResponseDto
-        //post 1개인지 여러개인지 확인
-        //잘 파싱
-        //개수만큼 차래대로 save
+    public ResponseEntity<Long> postSaveApi(@RequestBody String posts) throws JsonProcessingException {
         PostsResponseDto givenPost = objectMapper.readValue(posts, PostsResponseDto.class);
         PostsSaveRequestDto post2Save = PostsSaveRequestDto.builder()
                 .title(givenPost.getTitle())
