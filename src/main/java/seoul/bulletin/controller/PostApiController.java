@@ -39,7 +39,7 @@ public class PostApiController {
     @ResponseBody
     @GetMapping(value = "/posts/api")
     public PostsResponseDto getFormApiJson(@RequestParam("id") Long id) {
-        PostsResponseDto post = postsService.findById(id);
+        PostsResponseDto post = postsService.findByIdOnDB(id);
         return post;
     }
 
@@ -95,7 +95,7 @@ public class PostApiController {
      * */
     @ResponseBody
     @GetMapping("/posts/outside-api/{target}")
-    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name) throws IOException, ParseException, URISyntaxException {
+    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name){
         PostsSaveRequestDto givenPost = postsService.getPostInOutsidePostApi(name);
         Long savedId = postsService.save(givenPost);
         Map<String, String> ret = new HashMap<>();

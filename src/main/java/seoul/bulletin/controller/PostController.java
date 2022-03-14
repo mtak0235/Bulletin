@@ -9,6 +9,9 @@ import seoul.bulletin.dto.PostsSaveRequestDto;
 import seoul.bulletin.dto.PostsUpdateRequestDto;
 import seoul.bulletin.service.PostsService;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @Controller
 public class PostController {
@@ -35,14 +38,14 @@ public class PostController {
 
     @GetMapping("/posts/{id}")
     public String resultForm(@PathVariable Long id, Model model) {
-        model.addAttribute("post", postsService.findById(id));
+        model.addAttribute("post", postsService.findByIdOnDB(id));
         return "post_result";
     }
 
     @GetMapping("/posts/update/{id}")
     public String postsUpdate(@PathVariable Long id, Model model) {
 
-        PostsResponseDto dto = postsService.findById(id);
+        PostsResponseDto dto = postsService.findByIdOnDB(id);
         PostsUpdateRequestDto postsUpdateRequestDto = new PostsUpdateRequestDto();
         postsUpdateRequestDto.setId(dto.getId());
         postsUpdateRequestDto.setContent(dto.getContent());//
@@ -52,9 +55,9 @@ public class PostController {
         return "post_update";
     }
 
-    @PostMapping("/posts/update/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute("form") PostsUpdateRequestDto requestDto) {
-        postsService.update(id, requestDto);
+    @PostMapping("/posts/update")
+    public String update(@ModelAttribute("form") PostsUpdateRequestDto requestDto) {
+        postsService.update(requestDto);
         return "redirect:/";
     }
 
@@ -65,4 +68,17 @@ public class PostController {
         return "redirect:/";
     }
 
+    @GetMapping("/error-ex")
+    public void errorEx() {
+        throw new RuntimeException("예외 발생!");
+    }
+
+    @GetMapping("/error-404")
+    public void error404(HttpServletResponse response) throws IOException {
+        response.sendError(404, "404 오류!");
+    }
+    @GetMapping("/error-500")
+    public void error500(HttpServletResponse response) throws IOException, IOException {
+        response.sendError(500);
+    }
 }

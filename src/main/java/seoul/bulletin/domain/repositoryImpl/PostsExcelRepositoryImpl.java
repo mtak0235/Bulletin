@@ -1,5 +1,6 @@
 package seoul.bulletin.domain.repositoryImpl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -11,8 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Optional;
 
+@Slf4j
 public class PostsExcelRepositoryImpl implements PostsExcelRepository {
     private Workbook workbook;
     private Sheet sheet;
@@ -21,19 +22,20 @@ public class PostsExcelRepositoryImpl implements PostsExcelRepository {
     private int rowNUm;
 
     @Override
-    public boolean updateOnExcel(PostOnExcelDto id) {
-        return false;
+    public void updateOnExcel(PostOnExcelDto id) {
+
+
     }
 
     @Override
     public boolean deleteOnExcel(Long id) {
-        return false;
+        return true;
     }
 
     @Override
-    public Long saveOnExcel(PostOnExcelDto posts) throws FileNotFoundException {
-        this.fos = new FileOutputStream(dataFile);
+    public Long saveOnExcel(PostOnExcelDto posts){
         try {
+            this.fos = new FileOutputStream(dataFile);
             Row newRow = sheet.createRow(rowNUm++);
             newRow.createCell(0).setCellValue(posts.getId());
             newRow.createCell(1).setCellValue(posts.getTitle());
@@ -43,10 +45,11 @@ public class PostsExcelRepositoryImpl implements PostsExcelRepository {
             fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            log.info(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            log.info(e.getMessage());
         }
-
         return posts.getId();
     }
 
