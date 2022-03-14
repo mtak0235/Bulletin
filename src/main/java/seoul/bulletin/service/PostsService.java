@@ -110,16 +110,16 @@ public class PostsService {
         PostOnExcelDto postOnExcel = null;
         JSONObject ret = new JSONObject();
 
-            postOnDB = postsRepository.findById(id).get();
-            postOnFile = postsRepository.findByIdOnFile(id);
-            postOnExcel = postsRepository.findByIdOnExcel(id);
-
-        String DBData = objectMapper.writeValueAsString(postOnDB);
-        String excelData = objectMapper.writeValueAsString(postOnExcel);
-        String fileData = objectMapper.writeValueAsString(postOnFile);
-        ret.put("post-db", (JSONObject) jsonParser.parse(DBData));
-        ret.put("post-excel", (JSONObject) jsonParser.parse(excelData));
-        ret.put("post-file", (JSONObject) jsonParser.parse(fileData));
+//            postOnDB = postsRepository.findById(id).get();
+//            postOnFile = postsRepository.findByIdOnFile(id);
+//            postOnExcel = postsRepository.findByIdOnExcel(id);
+//
+//        String DBData = objectMapper.writeValueAsString(postOnDB);
+//        String excelData = objectMapper.writeValueAsString(postOnExcel);
+//        String fileData = objectMapper.writeValueAsString(postOnFile);
+//        ret.put("post-db", (JSONObject) jsonParser.parse(DBData));
+//        ret.put("post-excel", (JSONObject) jsonParser.parse(excelData));
+//        ret.put("post-file", (JSONObject) jsonParser.parse(fileData));
         return ret.toJSONString();
     }
 

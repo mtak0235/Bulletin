@@ -1,8 +1,11 @@
 package seoul.bulletin.exception;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
+@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "error.bad")
 public class InsufficientException extends RuntimeException{
 
     private int errorCode;

@@ -9,12 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import seoul.bulletin.dto.PostsResponseDto;
 import seoul.bulletin.dto.PostsSaveRequestDto;
+import seoul.bulletin.exception.InsufficientException;
 import seoul.bulletin.service.PostsService;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -101,6 +101,18 @@ public class PostApiController {
         Map<String, String> ret = new HashMap<>();
         ret.put("id", savedId.toString());
         return ret;
+    }
+
+    @ResponseBody
+    @GetMapping("/api/response-status-ex1")
+    public String responseStatusEx1() {
+        throw new InsufficientException("error");
+    }
+
+    @GetMapping("/api/response-status-ex2")
+    public String responseStatusEx2() {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "error.bad", new
+                IllegalArgumentException());
     }
 
 }
