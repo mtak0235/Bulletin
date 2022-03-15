@@ -70,12 +70,12 @@ public class PostController {
 
     @GetMapping("/error-ex")
     public void errorEx() {
-        throw new RuntimeException("예외 발생!");
+        throw new RuntimeException("예외 발생!");//ㄴㄴ 화면임.
     }
 
     @GetMapping("/error-404")
     public void error404(HttpServletResponse response) throws IOException {
-        response.sendError(404, "404 오류!");
+        response.sendError(404, "404 오류!");// 페이지
     }
     @GetMapping("/error-500")
     public void error500(HttpServletResponse response) throws IOException, IOException {

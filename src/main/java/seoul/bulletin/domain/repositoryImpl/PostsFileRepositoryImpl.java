@@ -1,10 +1,13 @@
 package seoul.bulletin.domain.repositoryImpl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import seoul.bulletin.domain.PostsFileRepository;
 import seoul.bulletin.dto.PostOnFileDto;
+import seoul.bulletin.exception.UserException;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -20,6 +23,8 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
     private BufferedWriter dataFileBufferedWriter;
     private FileReader dataFileReader;
     private BufferedReader dataFileBufferedReader;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
 
     @Override
     public void updateOnFile(PostOnFileDto post){
@@ -73,11 +78,7 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
 
     @Override
     public Long saveOnFile(PostOnFileDto post) {
-        try {
-            openFileWriter("data.txt", "index.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        openFileWriter("data.txt");
         String strJson = getStringFromPostOnFileDto(post);
         try {
             this.dataFileBufferedWriter.write(strJson);
@@ -92,7 +93,7 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
     }
 
     @Override
-    public PostOnFileDto findByIdOnFile(Long id) throws Exception {
+    public PostOnFileDto findByIdOnFile(Long id) throws UserException, IOException {
         openFileReader("data.txt");
         String readLine = null;
         while ((readLine = this.dataFileBufferedReader.readLine()) != null) {
@@ -101,17 +102,21 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
         }
         this.dataFileBufferedReader.close();
         ObjectMapper mapper = new ObjectMapper();
+        if (readLine == null) {
+            throw new UserException("no such exception data in file");
+        }
         PostOnFileDto post = mapper.readValue(readLine, PostOnFileDto.class);
         return post;
     }
 
     private String getStringFromPostOnFileDto(PostOnFileDto post) {
-        String strJson = "{" +
-                "\"id\":" + post.getId() +
-                ",\"title\":\"" + post.getTitle() +
-                "\",\"content\":\"" + post.getContent() +
-                "\",\"author\":\"" + post.getAuthor() +
-                "\"}";
+        String strJson = null;
+        try {
+            strJson = objectMapper.writeValueAsString(post);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            log.info("object to str에 실패했다.");
+        }
         return strJson;
     }
 
@@ -119,12 +124,11 @@ public class PostsFileRepositoryImpl implements PostsFileRepository {
     * 어?
     *
     * */
-    private void openFileWriter(String dataFileName, String indexFileName) throws IOException {
+    private void openFileWriter(String dataFileName){
         try {
+            this.dataFileWriter = new FileWriter(dataFileName, true);
             this.dataFileBufferedWriter = new BufferedWriter(dataFileWriter);
-            this.dataFileWriter = new FileWriter(dataFileName, true);
         } catch (IOException e) {
-            this.dataFileWriter = new FileWriter(dataFileName, true);
             log.info(e.getMessage());
         }
     }

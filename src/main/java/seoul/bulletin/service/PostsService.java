@@ -84,12 +84,14 @@ public class PostsService {
     }
 
     /*
+    >>아 이거 밑에 getDataFromDB랑 리턴 빼고 겹치는데...
     * post를 데이터베이스에서 찾기
     * input : [Long] post의 id
     * output : [PostsResponseDto] id, title, content, author
-    * */
+    * 비고 : 없으면 exception 던짐
+    */
     @Transactional
-    public PostsResponseDto findByIdOnDB(Long id) {
+    public PostsResponseDto findByIdOnDB(Long id) throws IllegalArgumentException {
         Posts postOnDB =  postsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("그런 게시글 없다. id" + id));
         return new PostsResponseDto(postOnDB);
@@ -98,56 +100,87 @@ public class PostsService {
     /*
     * post를 3개 저장소(엑셀, 파일, 데이터베이스)에서 데이터를 가져와서 합친다.
     * input : id(Long)
-    * output :
-    * jsonString(Excel(id, title, author, content),
-    * file(id, title, author, content)
-    * database(id, title, author, content))
+    * output :[String] 저장소들에서 가져온 post의 데이터
     * */
     @Transactional
     public String findByIdOnDBNFileNExcel(Long id) {
-        Posts postOnDB = null;
-        PostOnFileDto postOnFile = null;
-        PostOnExcelDto postOnExcel = null;
-        JSONObject ret = new JSONObject();
-
-//            postOnDB = postsRepository.findById(id).get();
-//            postOnFile = postsRepository.findByIdOnFile(id);
-//            postOnExcel = postsRepository.findByIdOnExcel(id);
-//
-//        String DBData = objectMapper.writeValueAsString(postOnDB);
-//        String excelData = objectMapper.writeValueAsString(postOnExcel);
-//        String fileData = objectMapper.writeValueAsString(postOnFile);
-//        ret.put("post-db", (JSONObject) jsonParser.parse(DBData));
-//        ret.put("post-excel", (JSONObject) jsonParser.parse(excelData));
-//        ret.put("post-file", (JSONObject) jsonParser.parse(fileData));
+        JSONObject ret;
+        ret = getDataFromStorage(id);
         return ret.toJSONString();
     }
 
-//    void getData(){
-//        getDataFromDB();
-//        getDatafromExcel();
-//        getDataFromFile();
-//
-//    }
-//
-//    void getDataFromDB(id) {
-//        postOnDB = postsRepository.findByIdOnDB(id).get();
-//        if (삑사리면)
-//            // log 남기고
-//            else { 넘겨주자..ㅍ}
-//    }
-//    void getDataFromFile()
-//    {
-//        postOnFile = postsRepository.findByIdOnFile(id);
-//    }
-//    void getDatafromExcel()
-//    {
-//        postOnExcel = postsRepository.findByIdOnExcel(id);
-//    }
-//
-//    object getdb() {
-//
-//    }
+    /*
+    * post를 복수개의 저장소에서 가져와 합친다.
+    * input : [Long] id
+    * output : [JSONObject] 'post - [storage name]' - 'data'
+    * 비고 : 한 저장소에 없더라도 남은 데이터라도 리턴한다.
+     */
+    private JSONObject getDataFromStorage(Long id) {
+        JSONObject ret = new JSONObject();
+
+        ret.put("post-db", getDataFromDB(id));
+        ret.put("post-excel",getDataFromFile(id));
+        ret.put("post-file", getDatafromExcel(id));
+        return ret;
+    }
+
+    /*
+    * post를 데이터베이스에서 가져온다.
+    * input : id
+    * output : [JSONObject] id, content, title author
+    * */
+    private JSONObject getDataFromDB(Long id) throws IllegalArgumentException {
+        JSONObject data = null;
+        try {
+            Posts post = postsRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("데이터베이스에 그런 post 없음."));
+            data = (JSONObject) jsonParser.parse(objectMapper.writeValueAsString(post));
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+        } finally {
+            return data;
+        }
+    }
+
+    /*
+     * post를 파일에서 가져온다.
+     * input : id
+     * output : [JSONObject] id, content, title author
+     * */
+    private JSONObject getDataFromFile(Long id)
+    {
+        JSONObject data = null;
+        try {
+            PostOnFileDto post = null;
+            post = postsRepository.findByIdOnFile(id);
+            data = (JSONObject) jsonParser.parse(objectMapper.writeValueAsString(post));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+        }
+       finally {
+            return data;
+        }
+    }
+
+    /*
+     * post를 엑셀에서 가져온다.
+     * input : id
+     * output : [JSONObject] id, content, title author
+     * */
+    private JSONObject getDatafromExcel(Long id)
+    {
+        JSONObject data = null;
+        try {
+            PostOnExcelDto post = postsRepository.findByIdOnExcel(id);
+            data = (JSONObject) jsonParser.parse(objectMapper.writeValueAsString(post));
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info(e.getMessage());
+        } finally {
+            return data;
+        }
+    }
 
     /*
     * db에 저장된 post의 리스트 찾기
@@ -232,8 +265,10 @@ public class PostsService {
             br.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            log.info(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            log.info(e.getMessage());
         }
         return readlineB.toString();
     }
