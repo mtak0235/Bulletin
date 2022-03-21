@@ -129,11 +129,11 @@ public class PostsService {
     * input : id
     * output : [JSONObject] id, content, title author
     * */
-    private JSONObject getDataFromDB(Long id) throws IllegalArgumentException {
+    private JSONObject getDataFromDB(Long id) {
         JSONObject data = null;
         try {
             Posts post = postsRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("데이터베이스에 그런 post 없음."));
+                    .orElseThrow(() -> new IllegalArgumentException("데이터베이스에 그런 post 없음."+ id));
             data = (JSONObject) jsonParser.parse(objectMapper.writeValueAsString(post));
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
