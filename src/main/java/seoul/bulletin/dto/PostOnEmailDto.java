@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor//필요 없겠는데
 public class PostOnEmailDto {
     private Long id;
     private String title;

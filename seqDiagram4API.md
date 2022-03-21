@@ -72,14 +72,58 @@ end
 ```mermaid
 sequenceDiagram
 actor Client
-participant C as PostController
 participant ApiC as PostApiController 
 participant S as PostService
 participant R as PostsRepository
 participant DB
 participant Log
 
-Client->>+ApiC: jsonString(id, title, author, content)
-ApiC->>+S: 
+Client->>+ApiC: postSaveApi(jsonString)(title, content, author)
+alt parse할 수 없는 형식이면
+ApiC->>Client: ParseException
+%% 필요한 정보 없어도 parse error날리게 처리하셈
+end
+ApiC->>+S: save(PostsSaveRequestDto)(title, content,author)
+rect rgb(105,105,105)
+S->>+R: save(post)(title, content, author)
+R->>-S: post(id, title, content, author)
+S->>+R: saveOnEmail(PostOnEmailDto)(id, title, content , author)
+S->>+R: saveOnExcel(PostOnExcelDto)(id, title, content, author)
+S->>+R: saveOnFile(PostOnFileDto)(id, title, content, author)
+end
+S->>-ApiC: id
+ApiC->>-Client: id, 200
+```
 
+```mermaid
+sequenceDiagram
+actor Client
+participant ApiC as PostApiController 
+participant S as PostService
+participant A as 외부Api
+participant R as PostsRepository
+participant DB
+participant Log
+
+Client->>+ApiC: target
+ApiC->>+S: getPostInOutsidePostApi(target)
+S->>A: target, subcondition
+alt api에서 데이터를 받아오는데 실패
+S->>L: log.info()
+S->>ApiC: InsufficientException(msg, 404)
+ApiC->>Client: 404 json 해야 함
+else 
+S->>ApiC:PostSaveRequestDto(title, content, author)
+ApiC->>+S: save(PostsSaveRequestDto)(title, content,author)
+rect rgb(105,105,105)
+S->>+R: save(post)(title, content, author)
+R->>-S: post(id, title, content, author)
+S->>+R: saveOnEmail(PostOnEmailDto)(id, title, content , author)
+S->>+R: saveOnExcel(PostOnExcelDto)(id, title, content, author)
+S->>+R: saveOnFile(PostOnFileDto)(id, title, content, author)
+end
+S->>-ApiC: id
+ApiC->>Client: jsonString(id)
+
+end
 ```

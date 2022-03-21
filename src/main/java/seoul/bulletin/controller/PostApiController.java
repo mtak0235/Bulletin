@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,7 @@ public class PostApiController {
 
     private final PostsService postsService;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private JSONParser jsonParser = new JSONParser();
 
     @GetMapping("/posts/all-type/{id}")
     public String getAllTypePostData(@PathVariable Long id) {
@@ -50,12 +54,12 @@ public class PostApiController {
      *데이터 저장하기 (외부 api 입장)
      * */
     @PostMapping(value = "/posts/api", consumes = "application/json")
-    public ResponseEntity<Long> postSaveApi(@RequestBody String posts) throws JsonProcessingException {
-        PostsResponseDto givenPost = objectMapper.readValue(posts, PostsResponseDto.class);
+    public ResponseEntity<Long> postSaveApi(@RequestBody String posts) throws ParseException {
+        JSONObject post = (JSONObject) jsonParser.parse(posts);
         PostsSaveRequestDto post2Save = PostsSaveRequestDto.builder()
-                .title(givenPost.getTitle())
-                .content(givenPost.getContent())
-                .author(givenPost.getAuthor())
+                .title((String) post.get("title"))
+                .content((String) post.get("content"))
+                .author((String) post.get("author"))
                 .build();
         Long savedId = postsService.save(post2Save);
         return new ResponseEntity<>(savedId, HttpStatus.OK);
@@ -94,7 +98,7 @@ public class PostApiController {
      * 외부 api 호출해서 저장하기
      * */
     @GetMapping("/posts/outside-api/{target}")
-    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name){
+    public Map<String, String> saveFormsFromOutsideApi(@PathVariable("target") String name) throws InsufficientException{
         PostsSaveRequestDto givenPost = postsService.getPostInOutsidePostApi(name);
         Long savedId = postsService.save(givenPost);
         Map<String, String> ret = new HashMap<>();

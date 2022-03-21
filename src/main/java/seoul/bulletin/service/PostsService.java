@@ -242,6 +242,7 @@ public class PostsService {
             givenPost = json2XService.json2PostsSaveRequestDto(givenData.getBody());
         } catch (ParseException e) {
             e.printStackTrace();
+            log.info("failed to parse given data");
             throw new InsufficientException("failed to get food data", 404);
         }
         return givenPost;

@@ -1,0 +1,3 @@
+{"id":55,"title":"밥류","content":"눌은밥","author":"쌀밥"}
+{"id":56,"title":"k","content":"dd","author":"ddd"}
+{"id":57,"title":"튀김류","content":"사과","author":"기타 튀김류"}
